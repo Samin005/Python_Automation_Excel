@@ -1,6 +1,7 @@
 import openpyxl as xl
 from openpyxl.chart import BarChart, Reference
 from pathlib import Path
+import random
 
 
 class Excel:
@@ -8,7 +9,11 @@ class Excel:
         self.path = path
         self.file_name = file_name
         self.sheet_name = sheet_name
-        self.workbook_file = xl.load_workbook(f'{self.path.name}/{self.file_name}')
+        print(self.path.name)
+        if self.path.name != '':
+            self.workbook_file = xl.load_workbook(f'{self.path.name}/{self.file_name}')
+        else:
+            self.workbook_file = xl.load_workbook(self.file_name)
         self.sheet = self.workbook_file[sheet_name]
 
     def get_cell_value(self, row, column):
@@ -60,3 +65,9 @@ class Excel:
                               min_column=target_column_to_read,
                               max_column=target_column_to_update,
                               insert_cell='e1')
+
+    def generate_random_integers(self, start_row, end_row, start_column, end_column, min_value, max_value):
+        for row in range(start_row, end_row + 1):
+            for column in range(start_column, end_column + 1):
+                random_value = random.randint(min_value, max_value)
+                self.set_cell_value(row, column, random_value)
