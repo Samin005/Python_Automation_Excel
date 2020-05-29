@@ -1,4 +1,5 @@
 import openpyxl as xl
+from openpyxl.chart import BarChart, Reference
 from pathlib import Path
 
 
@@ -23,6 +24,16 @@ class Excel:
         self.sheet.cell(row, column).value = value
         print(f'Cell{row, column} updated!')
 
+    def create_bar_chart(self, min_row, max_row, min_column, max_column, insert_cell):
+        bar_chart = BarChart()
+        chart_data = Reference(self.sheet,
+                               min_row=min_row,
+                               max_row=max_row,
+                               min_col=min_column,
+                               max_col=max_column)
+        bar_chart.add_data(chart_data, titles_from_data=True)
+        self.sheet.add_chart(bar_chart, insert_cell)
+
     def save_as(self, file_name):
         path = Path('results')
         if not path.exists():
@@ -44,4 +55,8 @@ class Excel:
         for current_row in range(row_start_count_without_header, self.sheet.max_row + 1):
             cell_value = self.get_cell_value(current_row, target_column_to_read)
             self.set_cell_value(current_row, target_column_to_update, cell_value * 0.9)
-        self.save_as(f'updated_{self.file_name}')
+        self.create_bar_chart(min_row=header_row_no,
+                              max_row=self.sheet.max_row,
+                              min_column=target_column_to_read,
+                              max_column=target_column_to_update,
+                              insert_cell='e1')
